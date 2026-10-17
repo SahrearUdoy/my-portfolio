@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "[Your Name] | Web Developer Portfolio",
-  description: "Personal web developer portfolio featuring modern projects and celestial sky themes.",
+  title: "Udoy | Web Developer Portfolio",
+  description: "Personal developer portfolio of Udoy — Web Developer crafting responsive, intuitive web experiences with Next.js, React, TypeScript, and celestial themes.",
 };
 
 const themeInitScript = `

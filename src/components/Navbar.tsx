@@ -114,9 +114,8 @@ export default function Navbar() {
           onClick={(e) => handleNavClick("#hero", "hero", e)}
           aria-label="Udoy - Web Developer Portfolio Home"
           aria-current={activeSection === "hero" ? "location" : undefined}
-          className={`flex items-center gap-2.5 text-base-content font-bold text-lg tracking-tight hover:text-primary transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl px-2 py-1 ${
-            activeSection === "hero" ? "ring-1 ring-primary/25 bg-base-200/40" : ""
-          }`}
+          className={`flex items-center gap-2.5 text-base-content font-bold text-lg tracking-tight hover:text-primary transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl px-2 py-1 ${activeSection === "hero" ? "ring-1 ring-primary/25 bg-base-200/40" : ""
+            }`}
         >
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-primary-content shadow-sm">
             <Sparkles className="w-5 h-5 animate-pulse" />
@@ -137,11 +136,10 @@ export default function Navbar() {
                 href={link.href}
                 onClick={(e) => handleNavClick(link.href, link.id, e)}
                 aria-current={isActive ? "location" : undefined}
-                className={`relative px-3.5 py-1.5 rounded-xl text-sm font-medium transition-all duration-200 border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                  isActive
+                className={`relative px-3.5 py-1.5 rounded-xl text-sm font-medium transition-all duration-200 border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive
                     ? "bg-primary/15 text-primary border-primary/30 shadow-xs font-semibold"
                     : "text-base-content/75 hover:text-primary hover:bg-base-200/60 border-transparent font-medium"
-                }`}
+                  }`}
               >
                 <span className="flex items-center gap-1.5">
                   {isActive && (
@@ -185,11 +183,10 @@ export default function Navbar() {
                 href={link.href}
                 onClick={(e) => handleNavClick(link.href, link.id, e)}
                 aria-current={isActive ? "location" : undefined}
-                className={`block px-4 py-2.5 rounded-xl text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                  isActive
+                className={`block px-4 py-2.5 rounded-xl text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive
                     ? "bg-primary/15 text-primary font-bold border-l-4 border-primary pl-3 shadow-xs"
                     : "text-base-content/85 hover:bg-base-200 hover:text-primary font-medium"
-                }`}
+                  }`}
               >
                 <span className="flex items-center justify-between">
                   <span>{link.label}</span>

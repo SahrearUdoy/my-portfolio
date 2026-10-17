@@ -11,6 +11,8 @@ interface VerifiedProject {
   highlights: string[];
   technologies: { name: string; icon: React.ComponentType<{ className?: string }> }[];
   status: string;
+  repoUrl?: string;
+  demoUrl?: string;
 }
 
 const VERIFIED_PROJECTS: VerifiedProject[] = [
@@ -32,6 +34,8 @@ const VERIFIED_PROJECTS: VerifiedProject[] = [
       { name: "DaisyUI 5", icon: SiDaisyui },
     ],
     status: "Verified in Current Codebase",
+    repoUrl: "https://github.com/SahrearUdoy/my-portfolio",
+    demoUrl: "https://my-portfolio-two-nu-71.vercel.app/",
   },
 ];
 
@@ -115,17 +119,34 @@ export default function Launchpad() {
                   ))}
                 </div>
 
-                {/* Honest Placeholder Badges (Non-deceptive, not fake dead links) */}
+                {/* Verified Action Links: GitHub Repository & Live Demo */}
                 <div className="flex flex-wrap items-center gap-3 pt-1">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-base-100/90 border border-dashed border-base-300 text-base-content/65 cursor-default">
-                    <Code2 className="w-3.5 h-3.5 text-base-content/50" />
-                    <span>Repository URL — (Add when ready)</span>
-                  </div>
+                  {proj.repoUrl && (
+                    <a
+                      href={proj.repoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-base-100 hover:bg-base-200/80 border border-base-300 hover:border-primary/50 text-base-content/90 hover:text-primary transition-all duration-200 shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group/btn"
+                      aria-label="View source code on GitHub (opens in a new tab)"
+                    >
+                      <Code2 className="w-3.5 h-3.5 text-primary transition-transform group-hover/btn:scale-110" />
+                      <span>GitHub Repository</span>
+                      <ExternalLink className="w-3 h-3 text-base-content/40 ml-0.5" />
+                    </a>
+                  )}
 
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-base-100/90 border border-dashed border-base-300 text-base-content/65 cursor-default">
-                    <ExternalLink className="w-3.5 h-3.5 text-base-content/50" />
-                    <span>Live Demo — (Add deployment link)</span>
-                  </div>
+                  {proj.demoUrl && (
+                    <a
+                      href={proj.demoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-primary/10 hover:bg-primary/20 border border-primary/25 hover:border-primary/50 text-primary transition-all duration-200 shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group/btn"
+                      aria-label="View live demo application (opens in a new tab)"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 text-primary transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+                      <span>Live Demo</span>
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
