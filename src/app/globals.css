@@ -183,4 +183,29 @@ html, body {
   }
 }
 
+/* Hero Two-Column Layout */
+.hero-two-column-layout {
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .hero-two-column-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr) !important;
+    align-items: center !important;
+    gap: 2.5rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-two-column-layout {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr) !important;
+    gap: 3.5rem !important;
+  }
+}
+
+
 

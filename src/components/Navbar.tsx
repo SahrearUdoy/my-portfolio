@@ -10,23 +10,23 @@ export default function Navbar() {
   const navLinks = [
     { label: "About", href: "#about" },
     { label: "Skills", href: "#skills" },
-    { label: "Projects", href: "#projects" },
+    { label: "Projects", href: "#launchpad" },
     { label: "Contact", href: "#contact" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-base-100/85 backdrop-blur-md border-b border-base-300/80 transition-colors duration-300">
+    <header className="sticky top-0 z-50 w-full bg-base-100/80 backdrop-blur-md border-b border-base-300/80 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo / Title */}
         <a
           href="#"
-          className="flex items-center gap-2 text-base-content font-bold text-lg tracking-tight hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg px-1.5 py-1"
+          className="flex items-center gap-2.5 text-base-content font-bold text-lg tracking-tight hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg px-1.5 py-1"
         >
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-primary-content shadow-sm">
             <Sparkles className="w-5 h-5 animate-pulse" />
           </div>
           <div className="flex flex-col text-left leading-tight">
-            <span className="font-semibold text-sm sm:text-base">[Your Name]</span>
+            <span className="font-semibold text-sm sm:text-base tracking-tight">Udoy</span>
             <span className="text-xs font-normal text-base-content/70">Web Developer</span>
           </div>
         </a>
