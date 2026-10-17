@@ -3,38 +3,50 @@
 import React, { useEffect, useState, useRef, useSyncExternalStore } from "react";
 import { useTheme } from "./ThemeProvider";
 
-type MoonPhase = "waxing-crescent" | "waning-crescent" | "first-quarter" | "waxing-gibbous" | "full-moon";
+export type MoonPhase =
+  | "waxing-crescent"
+  | "first-quarter"
+  | "waxing-gibbous"
+  | "full-moon"
+  | "waning-crescent";
 
-const MOON_PHASES: MoonPhase[] = [
+export const MOON_PHASES: MoonPhase[] = [
   "waxing-crescent",
-  "waning-crescent",
   "first-quarter",
   "waxing-gibbous",
   "full-moon",
+  "waning-crescent",
 ];
 
-function subscribeToStorage(callback: () => void) {
-  window.addEventListener("storage", callback);
-  return () => window.removeEventListener("storage", callback);
-}
+// Module-level cache so the phase advances ONLY ONCE per full page reload,
+// remaining perfectly stable during re-renders, scrolling, or theme toggles.
+let cachedMoonPhase: MoonPhase | null = null;
 
-function getMoonPhaseSnapshot(): MoonPhase {
-  if (typeof window === "undefined") return "full-moon";
-  try {
-    let phase = sessionStorage.getItem("celestial_moon_phase") as MoonPhase | null;
-    if (!phase || !MOON_PHASES.includes(phase)) {
-      const randomIndex = Math.floor(Math.random() * MOON_PHASES.length);
-      phase = MOON_PHASES[randomIndex];
-      sessionStorage.setItem("celestial_moon_phase", phase);
-    }
-    return phase;
-  } catch {
-    return "waxing-crescent";
+function advanceAndGetMoonPhase(): MoonPhase {
+  if (typeof window === "undefined") {
+    return MOON_PHASES[0];
   }
-}
+  if (cachedMoonPhase !== null) {
+    return cachedMoonPhase;
+  }
 
-function getServerMoonPhaseSnapshot(): MoonPhase {
-  return "full-moon";
+  try {
+    const STORAGE_KEY = "celestial_moon_phase_index";
+    const stored = localStorage.getItem(STORAGE_KEY);
+    let nextIndex = 0;
+    if (stored !== null) {
+      const parsed = parseInt(stored, 10);
+      if (!isNaN(parsed) && parsed >= 0 && parsed < MOON_PHASES.length) {
+        nextIndex = (parsed + 1) % MOON_PHASES.length;
+      }
+    }
+    localStorage.setItem(STORAGE_KEY, nextIndex.toString());
+    cachedMoonPhase = MOON_PHASES[nextIndex];
+  } catch {
+    cachedMoonPhase = MOON_PHASES[0];
+  }
+
+  return cachedMoonPhase;
 }
 
 // 50 deterministic stars categorized into micro, bright, and 4-point sparkle stars
@@ -106,9 +118,23 @@ const STARS_DATA: StarItem[] = [
   { top: "97%", left: "96%", type: "micro", delay: "1.7s", duration: "5.5s" },
 ];
 
+const emptySubscribe = () => () => {};
+
+function getMoonPhaseSnapshot(): MoonPhase {
+  return advanceAndGetMoonPhase();
+}
+
+function getServerMoonPhaseSnapshot(): MoonPhase {
+  return MOON_PHASES[0];
+}
+
 export default function CelestialSky() {
   const { theme, mounted } = useTheme();
-  const moonPhase = useSyncExternalStore(subscribeToStorage, getMoonPhaseSnapshot, getServerMoonPhaseSnapshot);
+  const moonPhase = useSyncExternalStore(
+    emptySubscribe,
+    getMoonPhaseSnapshot,
+    getServerMoonPhaseSnapshot
+  );
   const [scrollRotation, setScrollRotation] = useState<number>(0);
   const rafRef = useRef<number | null>(null);
 
@@ -149,7 +175,6 @@ export default function CelestialSky() {
       {/* ========================================================================= */}
       {/* 2. DAY MODE: GLOWING SUN WITH RADIANT RAYS & HORIZON TRANSITION           */}
       {/* ========================================================================= */}
-      {/* Sinks gracefully 320px down towards the horizon on dark mode, rises on light */}
       <div
         className={`absolute top-20 right-6 sm:top-24 sm:right-12 md:top-24 md:right-24 lg:top-28 lg:right-36 will-change-transform ${
           isDay
@@ -161,16 +186,14 @@ export default function CelestialSky() {
           {/* Layer A: Atmospheric Warm Ambient Diffusion Glow */}
           <div className="absolute w-80 h-80 sm:w-96 sm:h-96 md:w-[460px] md:h-[460px] rounded-full bg-radial from-amber-300/35 via-yellow-200/15 to-transparent blur-3xl pointer-events-none" />
 
-          {/* Layer B: Radiant Tapered Sun Rays (Scroll-Reactive Rotation + Ambient Breathing) */}
+          {/* Layer B: Radiant Tapered Sun Rays */}
           <div
             className="absolute w-72 h-72 sm:w-88 sm:h-88 md:w-[460px] md:h-[460px] pointer-events-none will-change-transform"
             style={{ transform: `rotate(${scrollRotation}deg)` }}
           >
-            {/* Inner container performs gentle breathing shimmer without interfering with scroll rotation */}
             <div className="w-full h-full animate-ray-breathe">
               <svg viewBox="0 0 400 400" className="w-full h-full drop-shadow-sm">
                 <defs>
-                  {/* Primary Shaft Gradient */}
                   <linearGradient id="primaryRayGrad" x1="0%" y1="100%" x2="0%" y2="0%">
                     <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.75" />
                     <stop offset="35%" stopColor="#FBBF24" stopOpacity="0.55" />
@@ -178,7 +201,6 @@ export default function CelestialSky() {
                     <stop offset="100%" stopColor="#FEF08A" stopOpacity="0" />
                   </linearGradient>
 
-                  {/* Secondary Shaft Gradient */}
                   <linearGradient id="secondaryRayGrad" x1="0%" y1="100%" x2="0%" y2="0%">
                     <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.60" />
                     <stop offset="50%" stopColor="#FDE68A" stopOpacity="0.30" />
@@ -186,7 +208,7 @@ export default function CelestialSky() {
                   </linearGradient>
                 </defs>
 
-                {/* 12 Primary Tapered Light Shafts (Expanding flared beams) */}
+                {/* 12 Primary Tapered Light Shafts */}
                 {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
                   <polygon
                     key={`p-${deg}`}
@@ -196,7 +218,7 @@ export default function CelestialSky() {
                   />
                 ))}
 
-                {/* 12 Intermediate Soft Rays (Providing rich atmospheric depth) */}
+                {/* 12 Intermediate Soft Rays */}
                 {[15, 45, 75, 105, 135, 165, 195, 225, 255, 285, 315, 345].map((deg) => (
                   <polygon
                     key={`s-${deg}`}
@@ -212,7 +234,7 @@ export default function CelestialSky() {
           {/* Layer C: Golden Solar Corona Glow */}
           <div className="absolute w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-amber-400/45 blur-xl pointer-events-none" />
 
-          {/* Layer D: Luminous Sun Orb with Golden Pulse */}
+          {/* Layer D: Luminous Sun Orb */}
           <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full bg-gradient-to-tr from-amber-500 via-amber-300 to-yellow-100 shadow-[0_0_60px_rgba(245,158,11,0.65),0_0_100px_rgba(251,191,36,0.35)] animate-sun-pulse relative z-10 border border-amber-200/60" />
         </div>
       </div>
@@ -225,7 +247,6 @@ export default function CelestialSky() {
           isDay ? "opacity-100" : "opacity-0"
         }`}
       >
-        {/* Cloud 1: Upper-Left, Slow Drift */}
         <div className="absolute top-24 -left-6 sm:left-4 md:left-12 w-72 sm:w-96 md:w-[420px] animate-cloud-slow">
           <svg viewBox="0 0 200 80" className="w-full h-auto drop-shadow-md">
             <defs>
@@ -242,7 +263,6 @@ export default function CelestialSky() {
           </svg>
         </div>
 
-        {/* Cloud 2: Upper Center-Right, Gentle Drift */}
         <div className="absolute top-48 left-1/3 sm:left-1/2 w-64 sm:w-80 md:w-96 animate-cloud-fast">
           <svg viewBox="0 0 200 80" className="w-full h-auto drop-shadow-md">
             <defs>
@@ -259,7 +279,6 @@ export default function CelestialSky() {
           </svg>
         </div>
 
-        {/* Cloud 3: Mid-Sky Left Ambient Drift */}
         <div className="absolute top-96 left-8 sm:left-16 md:left-24 w-60 sm:w-72 md:w-80 animate-cloud-slow opacity-80">
           <svg viewBox="0 0 200 80" className="w-full h-auto drop-shadow-sm">
             <path
@@ -290,7 +309,6 @@ export default function CelestialSky() {
             }}
           >
             {star.type === "sparkle" && (
-              // Distinct 4-Point Luminous Star Flare
               <div
                 className="animate-star-sparkle flex items-center justify-center text-white"
                 style={{ animationDelay: star.delay, animationDuration: star.duration }}
@@ -308,7 +326,6 @@ export default function CelestialSky() {
             )}
 
             {star.type === "bright" && (
-              // Crisp Luminous Point with Soft Outer Halo
               <div
                 className="animate-star-gentle rounded-full bg-white shadow-[0_0_5px_rgba(255,255,255,0.95),0_0_10px_rgba(169,196,236,0.6)]"
                 style={{
@@ -321,7 +338,6 @@ export default function CelestialSky() {
             )}
 
             {star.type === "micro" && (
-              // Gentle Distant Pale Star
               <div
                 className="animate-star-gentle rounded-full bg-sky-200/80 shadow-[0_0_3px_rgba(186,215,248,0.7)]"
                 style={{
@@ -337,9 +353,8 @@ export default function CelestialSky() {
       </div>
 
       {/* ========================================================================= */}
-      {/* 5. NIGHT MODE: RECOGNIZABLE MOON & HORIZON CELESTIAL TRANSITION           */}
+      {/* 5. NIGHT MODE: 5 VISIBLY DISTINCT MOON PHASES & CELESTIAL TRANSITION      */}
       {/* ========================================================================= */}
-      {/* Sinks gracefully 320px down towards the horizon on light mode, rises on dark */}
       <div
         className={`absolute top-20 right-6 sm:top-24 sm:right-12 md:top-24 md:right-24 lg:top-28 lg:right-36 will-change-transform ${
           !isDay
@@ -355,8 +370,92 @@ export default function CelestialSky() {
           <div className="absolute w-48 h-48 sm:w-60 sm:h-60 rounded-full bg-sky-300/25 blur-2xl pointer-events-none animate-lunar-halo" />
 
           {/* Layer C: Luminous Moon Disc with Restrained Luminous Edge */}
-          <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full relative overflow-hidden shadow-[0_0_35px_rgba(216,230,248,0.55),0_0_75px_rgba(127,163,222,0.30)] border border-sky-200/50 bg-[#0A1329]">
-            {/* Phase 1: Full Moon (Glowing pearl-silver sphere with authentic craters) */}
+          <div
+            className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full relative overflow-hidden shadow-[0_0_35px_rgba(216,230,248,0.55),0_0_75px_rgba(127,163,222,0.30)] border border-sky-200/50 bg-[#0A1329]"
+            title={`Moon Phase: ${moonPhase}`}
+          >
+            {/* =================================================================== */}
+            {/* Phase 1: Waxing Crescent (~22% illuminated right crescent)          */}
+            {/* =================================================================== */}
+            {moonPhase === "waxing-crescent" && (
+              <div className="w-full h-full relative">
+                <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0">
+                  <defs>
+                    <linearGradient id="crescentGradRight" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#FFFFFF" />
+                      <stop offset="50%" stopColor="#E2EEFC" />
+                      <stop offset="100%" stopColor="#8EAFE2" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M 50 0 A 50 50 0 0 1 50 100 A 30 50 0 0 0 50 0 Z"
+                    fill="url(#crescentGradRight)"
+                  />
+                  {/* Subtle crater details on the lit sickle */}
+                  <circle cx="68" cy="45" r="3" fill="#6B93DC" opacity="0.4" />
+                  <circle cx="62" cy="62" r="2.5" fill="#6B93DC" opacity="0.35" />
+                </svg>
+                {/* Subtle silhouette texture on dark portion */}
+                <div className="absolute top-6 left-5 w-5 h-5 rounded-full bg-[#152545]/50 blur-[1px]" />
+              </div>
+            )}
+
+            {/* =================================================================== */}
+            {/* Phase 2: First Quarter (Crisp right 50% half moon)                  */}
+            {/* =================================================================== */}
+            {moonPhase === "first-quarter" && (
+              <div className="w-full h-full relative">
+                <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0">
+                  <defs>
+                    <linearGradient id="firstQuarterGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#FFFFFF" />
+                      <stop offset="60%" stopColor="#D4E5F9" />
+                      <stop offset="100%" stopColor="#8EAFE2" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M 50 0 A 50 50 0 0 1 50 100 L 50 0 Z"
+                    fill="url(#firstQuarterGrad)"
+                  />
+                  {/* Distinct lunar craters on illuminated hemisphere */}
+                  <circle cx="66" cy="35" r="4.5" fill="#6B93DC" opacity="0.35" />
+                  <circle cx="74" cy="54" r="6" fill="#6B93DC" opacity="0.3" />
+                  <circle cx="58" cy="72" r="3.5" fill="#6B93DC" opacity="0.35" />
+                </svg>
+                {/* Unlit side crater shadow */}
+                <div className="absolute top-7 left-5 w-6 h-6 rounded-full bg-[#152545]/50 blur-[1px]" />
+              </div>
+            )}
+
+            {/* =================================================================== */}
+            {/* Phase 3: Waxing Gibbous (~78% illuminated, bulging past center)     */}
+            {/* =================================================================== */}
+            {moonPhase === "waxing-gibbous" && (
+              <div className="w-full h-full relative">
+                <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0">
+                  <defs>
+                    <linearGradient id="waxingGibbousGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#FFFFFF" />
+                      <stop offset="50%" stopColor="#DCE8F7" />
+                      <stop offset="100%" stopColor="#8EAFE2" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M 50 0 A 50 50 0 0 1 50 100 A 28 50 0 0 1 50 0 Z"
+                    fill="url(#waxingGibbousGrad)"
+                  />
+                  {/* Distinct lunar maria textures */}
+                  <circle cx="48" cy="36" r="5" fill="#6B93DC" opacity="0.35" />
+                  <circle cx="68" cy="52" r="7" fill="#6B93DC" opacity="0.3" />
+                  <circle cx="42" cy="68" r="4.5" fill="#6B93DC" opacity="0.35" />
+                  <circle cx="70" cy="28" r="3" fill="#6B93DC" opacity="0.3" />
+                </svg>
+              </div>
+            )}
+
+            {/* =================================================================== */}
+            {/* Phase 4: Full Moon (100% illuminated pearlescent orb)              */}
+            {/* =================================================================== */}
             {moonPhase === "full-moon" && (
               <div className="w-full h-full rounded-full bg-gradient-to-tr from-[#9ABAE8] via-[#D8E6F8] to-[#FFFFFF] relative">
                 {/* Authentic lunar maria crater shading */}
@@ -367,70 +466,29 @@ export default function CelestialSky() {
               </div>
             )}
 
-            {/* Phase 2: Waxing Crescent (Illuminated right arc) */}
-            {moonPhase === "waxing-crescent" && (
-              <div className="w-full h-full relative">
-                <div className="absolute inset-0 bg-[#0B1528]" />
-                <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0">
-                  <path
-                    d="M 50 0 A 50 50 0 0 1 50 100 A 35 50 0 0 0 50 0 Z"
-                    fill="url(#moonCrescentGradR)"
-                  />
-                  <defs>
-                    <linearGradient id="moonCrescentGradR" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#FFFFFF" />
-                      <stop offset="60%" stopColor="#D8E5F6" />
-                      <stop offset="100%" stopColor="#8EAFE2" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-                {/* Subtle crater silhouette on dark portion */}
-                <div className="absolute top-6 left-5 w-5 h-5 rounded-full bg-[#152545]/60 blur-[1px]" />
-              </div>
-            )}
-
-            {/* Phase 3: Waning Crescent (Illuminated left arc) */}
+            {/* =================================================================== */}
+            {/* Phase 5: Waning Crescent (~22% illuminated left crescent)           */}
+            {/* =================================================================== */}
             {moonPhase === "waning-crescent" && (
               <div className="w-full h-full relative">
-                <div className="absolute inset-0 bg-[#0B1528]" />
                 <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0">
-                  <path
-                    d="M 50 0 A 50 50 0 0 0 50 100 A 35 50 0 0 1 50 0 Z"
-                    fill="url(#moonCrescentGradL)"
-                  />
                   <defs>
-                    <linearGradient id="moonCrescentGradL" x1="100%" y1="0%" x2="0%" y2="100%">
+                    <linearGradient id="crescentGradLeft" x1="100%" y1="0%" x2="0%" y2="100%">
                       <stop offset="0%" stopColor="#FFFFFF" />
-                      <stop offset="60%" stopColor="#D8E5F6" />
+                      <stop offset="50%" stopColor="#E2EEFC" />
                       <stop offset="100%" stopColor="#8EAFE2" />
                     </linearGradient>
                   </defs>
-                </svg>
-                <div className="absolute top-6 right-5 w-5 h-5 rounded-full bg-[#152545]/60 blur-[1px]" />
-              </div>
-            )}
-
-            {/* Phase 4: First Quarter (Crisp half moon) */}
-            {moonPhase === "first-quarter" && (
-              <div className="w-full h-full relative bg-[#0B1528]">
-                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-r from-[#D8E6F8] to-[#FFFFFF] rounded-r-full shadow-inner relative">
-                  <div className="absolute top-6 left-2 w-4 h-4 rounded-full bg-[#7FA3DE]/35 blur-[1px]" />
-                  <div className="absolute bottom-8 left-3 w-5 h-5 rounded-full bg-[#7FA3DE]/30 blur-[1px]" />
-                </div>
-              </div>
-            )}
-
-            {/* Phase 5: Waxing Gibbous (3/4 illuminated) */}
-            {moonPhase === "waxing-gibbous" && (
-              <div className="w-full h-full relative bg-[#0B1528]">
-                <div className="w-full h-full rounded-full bg-gradient-to-tr from-[#9ABAE8] via-[#D8E6F8] to-[#FFFFFF]" />
-                <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0">
                   <path
-                    d="M 50 0 A 50 50 0 0 0 50 100 A 22 50 0 0 1 50 0 Z"
-                    fill="#0B1528"
-                    opacity="0.92"
+                    d="M 50 0 A 50 50 0 0 0 50 100 A 30 50 0 0 1 50 0 Z"
+                    fill="url(#crescentGradLeft)"
                   />
+                  {/* Subtle craters on lit left rim */}
+                  <circle cx="32" cy="45" r="3" fill="#6B93DC" opacity="0.4" />
+                  <circle cx="38" cy="62" r="2.5" fill="#6B93DC" opacity="0.35" />
                 </svg>
+                {/* Subtle silhouette texture on dark portion */}
+                <div className="absolute top-6 right-5 w-5 h-5 rounded-full bg-[#152545]/50 blur-[1px]" />
               </div>
             )}
           </div>

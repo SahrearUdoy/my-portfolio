@@ -72,6 +72,18 @@ html, body {
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Celestial Keyframe Animations */
 @keyframes cloudDriftSlow {
   0% { transform: translateX(-8%); }
