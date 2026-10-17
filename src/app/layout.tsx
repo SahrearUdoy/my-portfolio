@@ -50,7 +50,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: themeInitScript }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-base-100 text-base-content antialiased selection:bg-primary/20 selection:text-primary">
+      <body className="min-h-full flex flex-col bg-transparent text-base-content antialiased selection:bg-primary/20 selection:text-primary">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
