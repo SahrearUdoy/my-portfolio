@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
+import { smoothScrollTo } from "@/utils/smoothScroll";
 import {
   ArrowRight,
   Mail,
@@ -112,6 +112,7 @@ export default function Hero() {
             {/* Primary Action: Explore Projects */}
             <a
               href="#launchpad"
+              onClick={(e) => smoothScrollTo("#launchpad", e)}
               className="btn btn-primary w-full sm:w-auto min-h-[46px] px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-primary via-[#5D85CE] to-secondary text-primary-content border-0 shadow-lg shadow-primary/20 hover:shadow-primary/35 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
             >
               <span>Explore Projects</span>
@@ -121,6 +122,7 @@ export default function Hero() {
             {/* Secondary Action: Get in Touch */}
             <a
               href="#contact"
+              onClick={(e) => smoothScrollTo("#contact", e)}
               className="btn btn-outline w-full sm:w-auto min-h-[46px] px-6 rounded-xl font-semibold text-sm border-base-300 hover:border-primary hover:bg-base-200/80 bg-base-100/70 backdrop-blur-md text-base-content hover:text-primary hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
             >
               <Mail className="w-4 h-4" />

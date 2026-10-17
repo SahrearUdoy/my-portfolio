@@ -131,8 +131,8 @@ export default function Launchpad() {
             </div>
           ))}
 
-          {/* Card 2: Future Full-Stack Project Slot (Clearly labeled placeholder) */}
-          <div className="flex flex-col justify-between p-6 rounded-2xl bg-base-200/30 border border-dashed border-base-300 space-y-5 transition-all hover:border-primary/40">
+          {/* Card 2: Future Full-Stack Project Slot (Client Collaboration Invitation) */}
+          <div className="flex flex-col justify-between p-6 rounded-2xl bg-base-200/30 border border-dashed border-base-300 space-y-5 transition-all hover:border-primary/40 group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-wider text-secondary">
@@ -144,25 +144,28 @@ export default function Launchpad() {
               </div>
 
               <div className="flex items-center gap-2">
-                <PlusCircle className="w-5 h-5 text-secondary" />
-                <h3 className="text-lg font-bold text-base-content">
-                  Upcoming Project Slot
+                <PlusCircle className="w-5 h-5 text-secondary shrink-0" />
+                <h3 className="text-base sm:text-lg font-bold text-base-content leading-snug">
+                  Your project goes here. Yes, YOU 🫵 — the client!
                 </h3>
               </div>
 
-              <p className="text-xs sm:text-sm text-base-content/65 leading-relaxed font-normal">
-                Reserved for your next verified project (e.g. Express &amp; MongoDB CRUD application, REST API integration, or authenticated full-stack app).
+              <p className="text-xs sm:text-sm text-base-content/75 leading-relaxed font-normal">
+                Have a full-stack application, REST API, database system, or authenticated web app in mind? Let&apos;s build it.
               </p>
             </div>
 
-            <div className="p-3 rounded-xl bg-base-100/70 border border-base-300 text-xs text-base-content/65 space-y-1">
-              <span className="font-semibold text-secondary block">To be supplied by you:</span>
-              <p>Project title, description, architecture details, and repository link.</p>
+            <div className="p-3.5 rounded-xl bg-base-100/80 border border-base-300/80 text-xs text-base-content/70 space-y-1">
+              <span className="font-semibold text-secondary flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Collaboration in Progress:</span>
+              </span>
+              <p>Project details and demo links will be added as the work takes shape.</p>
             </div>
           </div>
 
-          {/* Card 3: Interactive Frontend Experiment Slot (Clearly labeled placeholder) */}
-          <div className="flex flex-col justify-between p-6 rounded-2xl bg-base-200/30 border border-dashed border-base-300 space-y-5 transition-all hover:border-primary/40">
+          {/* Card 3: Interactive Frontend Experiment Slot (Client Collaboration Invitation) */}
+          <div className="flex flex-col justify-between p-6 rounded-2xl bg-base-200/30 border border-dashed border-base-300 space-y-5 transition-all hover:border-primary/40 group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-wider text-accent-content">
@@ -174,20 +177,23 @@ export default function Launchpad() {
               </div>
 
               <div className="flex items-center gap-2">
-                <Layers className="w-5 h-5 text-accent" />
-                <h3 className="text-lg font-bold text-base-content">
-                  Component / UI Exploration
+                <Layers className="w-5 h-5 text-accent shrink-0" />
+                <h3 className="text-base sm:text-lg font-bold text-base-content leading-snug">
+                  Your idea goes here. Yes, YOU 🫵 — the client!
                 </h3>
               </div>
 
-              <p className="text-xs sm:text-sm text-base-content/65 leading-relaxed font-normal">
-                Reserved for an interactive UI experiment, custom React hook collection, or modular design system implementation.
+              <p className="text-xs sm:text-sm text-base-content/75 leading-relaxed font-normal">
+                Need an interactive interface, a custom component, or a distinctive UI experience? Let&apos;s make it happen.
               </p>
             </div>
 
-            <div className="p-3 rounded-xl bg-base-100/70 border border-base-300 text-xs text-base-content/65 space-y-1">
-              <span className="font-semibold text-accent block">To be supplied by you:</span>
-              <p>Demo title, interactive features, and preview assets.</p>
+            <div className="p-3.5 rounded-xl bg-base-100/80 border border-base-300/80 text-xs text-base-content/70 space-y-1">
+              <span className="font-semibold text-accent flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Creative Exploration:</span>
+              </span>
+              <p>Demo details, interactive features, and preview assets will be added as the work takes shape.</p>
             </div>
           </div>
         </div>

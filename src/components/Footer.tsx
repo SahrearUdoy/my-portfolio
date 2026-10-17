@@ -3,6 +3,7 @@
 import React from "react";
 import { Sparkles, ArrowUp } from "lucide-react";
 import { SocialLinksGroup } from "./SocialLinks";
+import { smoothScrollTo } from "@/utils/smoothScroll";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -16,11 +17,8 @@ export default function Footer() {
     { label: "Contact", href: "#contact" },
   ];
 
-  const scrollToTop = () => {
-    if (typeof window !== "undefined") {
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
-    }
+  const scrollToTop = (e: React.MouseEvent) => {
+    smoothScrollTo("#hero", e);
   };
 
   return (
@@ -53,6 +51,7 @@ export default function Footer() {
               <a
                 key={link.label}
                 href={link.href}
+                onClick={(e) => smoothScrollTo(link.href, e)}
                 className="px-3 py-1.5 rounded-lg text-xs font-medium text-base-content/75 hover:text-primary hover:bg-base-200/60 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 {link.label}
