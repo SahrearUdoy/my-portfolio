@@ -1,26 +1,73 @@
 @import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+}
+
+@plugin "daisyui/theme" {
+  name: "ciel-day";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+  --color-base-100: #EAF1FA;
+  --color-base-200: #D8E5F6;
+  --color-base-300: #C9D8EC;
+  --color-base-content: #1E1612;
+  --color-primary: #4F7BC9;
+  --color-primary-content: #ffffff;
+  --color-secondary: #7FA3DE;
+  --color-secondary-content: #ffffff;
+  --color-accent: #A9C4EC;
+  --color-accent-content: #1E1612;
+  --color-neutral: #1E1612;
+  --color-neutral-content: #ffffff;
+  --radius-box: 1rem;
+  --radius-field: 0.5rem;
+  --border: 1px;
+}
+
+@plugin "daisyui/theme" {
+  name: "ciel-night";
+  default: false;
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: #080E1E;
+  --color-base-200: #0F1A36;
+  --color-base-300: #172852;
+  --color-base-content: #F0F5FD;
+  --color-primary: #7FA3DE;
+  --color-primary-content: #080E1E;
+  --color-secondary: #A9C4EC;
+  --color-secondary-content: #080E1E;
+  --color-accent: #4F7BC9;
+  --color-accent-content: #ffffff;
+  --color-neutral: #172852;
+  --color-neutral-content: #F0F5FD;
+  --radius-box: 1rem;
+  --radius-field: 0.5rem;
+  --border: 1px;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --sky-gradient-start: #EAF1FA;
+  --sky-gradient-end: #D8E5F6;
+  --card-bg: rgba(255, 255, 255, 0.88);
+  --card-border: #C9D8EC;
+  --shadow-celestial: 0 10px 30px -10px rgba(79, 123, 201, 0.15);
+  --sun-glow: rgba(250, 204, 21, 0.35);
+  --hero-glow: radial-gradient(circle, rgba(127, 163, 222, 0.45) 0%, rgba(169, 196, 236, 0.15) 55%, transparent 70%);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="ciel-night"] {
+  --sky-gradient-start: #080E1E;
+  --sky-gradient-end: #0B1528;
+  --card-bg: rgba(15, 26, 54, 0.82);
+  --card-border: rgba(127, 163, 222, 0.22);
+  --shadow-celestial: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  --moon-glow: rgba(169, 196, 236, 0.45);
+  --hero-glow: radial-gradient(circle, rgba(79, 123, 201, 0.4) 0%, rgba(127, 163, 222, 0.12) 55%, transparent 70%);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html, body {
+  min-height: 100%;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
